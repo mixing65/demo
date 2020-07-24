@@ -1,0 +1,45 @@
+{
+  "presets": [
+    ["env", {
+      "modules": false,
+      "targets": {
+        "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
+      }
+    }],
+    // ["es2015", { "modules": false }],
+    "stage-2"
+  ],
+  // "plugins": ["transform-vue-jsx", "transform-runtime"]
+  "plugins": ["transform-vue-jsx", "transform-runtime",
+  //   ["component",
+  //   {
+  //     "libraryName": "mint-ui",
+  //     "style": true
+  //   }
+  // ],
+  // ["import", {
+  //         "libraryName": "vant",
+  //         "libraryDirectory": "es",
+  //         "style": true
+  //       }]
+  [
+          "component",
+          {
+            "libraryName": "element-ui",
+            "styleLibraryName": "theme-chalk"
+          }
+        ]
+  ]
+}
+// {
+//   "presets": [["es2015", { "modules": false }]],
+//   "plugins": [
+//     [
+//       "component",
+//       {
+//         "libraryName": "element-ui",
+//         "styleLibraryName": "theme-chalk"
+//       }
+//     ]
+//   ]
+// }
