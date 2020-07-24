@@ -37,7 +37,9 @@ Vue.use(Input)
 .use(Row)
 .use(Col)
 Vue.prototype.$http = axios
-axios.defaults.baseURL = 'https://easy-mock.com/mock/5f16da6dee31c413514f6419/study'
+
+axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
+// axios.defaults.baseURL = 'https://easy-mock.com/mock/5f16da6dee31c413514f6419/study'
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

@@ -8,8 +8,8 @@
       <!-- 表单区域 -->
       <el-form ref="formRef" :model="form" class="loginForm" :rules="rules">
         <!-- 用户名 -->
-        <el-form-item prop="name">
-          <el-input placeholder="用户名" prefix-icon="el-icon-user-solid" v-model="form.name"></el-input>
+        <el-form-item prop="username">
+          <el-input placeholder="用户名" prefix-icon="el-icon-user-solid" v-model="form.username"></el-input>
         </el-form-item>
         <!-- 密码 -->
         <el-form-item prop="password">
@@ -32,12 +32,12 @@ export default {
     return {
       // 表单数据绑定
       form: {
-        name: '',
-        password: ''
+        username: 'admin',
+        password: '123456'
       },
       // 表单验证规则
       rules: {
-        name: [
+        username: [
           // require:true必填项 trigger 触发时机
           {required: true,message: '请输入用户名',trigger:"blur" },
           {min:3,max:10,message: '长度在3-10个字符',trigger: "blur"}
@@ -71,6 +71,7 @@ export default {
       this.$refs.formRef.validate( valid=> {
         if(!valid) return;
         window.sessionStorage.setItem('login','testlogin')
+        this.$http.post('login',this.form)
         this.$router.push('/home')
       })
     }
