@@ -1,5 +1,6 @@
 <template>
   <el-container class="homeBox">
+    <!-- 头部 -->
     <el-header>
       <el-row class="headerLine">
         <el-col :span="6">
@@ -14,7 +15,26 @@
       </el-row>
     </el-header>
     <el-container>
-      <el-aside width="200px">Aside</el-aside>
+      <!-- 左侧导航 -->
+      <el-aside :width="collapse? '64px':'200px'">
+        <div @click="collapse =!collapse" class="collapse">|||</div>
+        <el-menu :collapse="collapse" :collapse-transition="false" unique-opened background-color="#545c64" text-color="#fff" active-text-color="#409eff" @open="handleOpen" @close="handleClose">
+        <!-- 一级菜单 -->
+        <el-submenu :index="item.id + ''" v-for="item in meunList" :key="item.id">
+          <!-- 一级菜单模板区域 -->
+          <template slot="title">
+            <i :class="iconList[item.id]"></i>
+            <span>{{item.authName}}</span>
+          </template>
+          <!-- 二级菜单 -->
+          <el-menu-item :index="items.id + ''" v-for="items in item.children" :key="items.id">
+            <i class="el-icon-menu"></i>
+            <span slot="title">{{items.authName}}</span>
+          </el-menu-item>
+        </el-submenu>
+      </el-menu>
+      </el-aside>
+      <!-- 主体内容 -->
       <el-main>Main</el-main>
     </el-container>
   </el-container>
@@ -25,17 +45,38 @@ export default {
   name: 'home',
   data() {
     return {
+      //菜单
+      meunList:[],
+      iconList:{'125': 'el-icon-user-solid','103': 'el-icon-s-tools','101': 'el-icon-s-goods',
+        '102': 'el-icon-s-order','145': 'el-icon-s-data'
+      },
+      collapse: false
     }
   },
   method: {},
   mouted() {
   },
   created() {
+    this.$http.get('menus').then(
+      res => {
+        this.meunList = res.data.data
+        console.log(this.meunList)
+      }
+    )
+    .catch(err => {
+      console.log(err)
+    })
   },
   methods: {
     layOut() {
-      window.sessionStorage.removeItem('login')
+      window.sessionStorage.removeItem('token')
       this.$router.push('/login')
+    },
+    handleOpen(){
+
+    },
+    handleClose(){
+
     }
   }
 }
@@ -62,9 +103,20 @@ export default {
   min-height: 80px;
 }
 .el-aside {
-  background: chocolate;
+  background: #555352;
+  .el-menu {
+    border-right: none;
+    // background: #6b6a69;
+  }
+  .collapse {
+    letter-spacing: 0.2em;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+  }
 }
 .el-main {
-  background: cornflowerblue;
+  // background: cornflowerblue;
 }
 </style>

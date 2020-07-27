@@ -64,7 +64,7 @@ const router = new Router({
 // next()放行 next('/login)强制跳转页面
 router.beforeEach((to,from,next)=>{
   if(to.path === '/login') return next()
-  const token = window.sessionStorage.getItem('login')
+  const token = window.sessionStorage.getItem('token')
   if(!token) return next('/login')
   next()
 })

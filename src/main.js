@@ -20,9 +20,15 @@ import { Button,
    Aside,
    Main,
    Row,
-   Col
+   Col,
+   Message,
+   Menu,
+   Submenu,
+   MenuItemGroup,
+   MenuItem
   } from 'element-ui'
 Vue.prototype.echarts = echarts
+Vue.prototype.$message = Message
 Vue.use(Button)
 Vue.use(Select)
 Vue.use(Carousel)
@@ -36,9 +42,19 @@ Vue.use(Input)
 .use(Main)
 .use(Row)
 .use(Col)
+.use(Menu)
+.use(Submenu)
+.use(MenuItemGroup)
+.use(MenuItem)
+
 Vue.prototype.$http = axios
 
 axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
+axios.interceptors.request.use(config =>{
+  console.log(config)
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+})
 // axios.defaults.baseURL = 'https://easy-mock.com/mock/5f16da6dee31c413514f6419/study'
 Vue.config.productionTip = false
 

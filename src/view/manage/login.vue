@@ -70,9 +70,26 @@ export default {
       // })
       this.$refs.formRef.validate( valid=> {
         if(!valid) return;
-        window.sessionStorage.setItem('login','testlogin')
-        this.$http.post('login',this.form)
-        this.$router.push('/home')
+        // window.sessionStorage.setItem('login','testlogin')
+        this.$http.post('login',this.form).then(
+          res => {
+            console.log(res.data.meta.status)
+            if(res.data.meta.status != '200'){
+              this.$message.error('登录失败')
+            }else{
+              const token = res.data.data.token
+              window.sessionStorage.setItem('token',token)
+              this.$message.success('登录成功')
+              setTimeout(()=> {
+                this.$router.push('/home')
+              },800)
+            }
+          }
+        )
+        .catch(err=>{
+          console.log(err)
+        })
+        
       })
     }
   }
