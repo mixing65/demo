@@ -18,7 +18,7 @@
       <!-- 左侧导航 -->
       <el-aside :width="collapse? '64px':'200px'">
         <div @click="collapse =!collapse" class="collapse">|||</div>
-        <el-menu :collapse="collapse" :collapse-transition="false" unique-opened background-color="#545c64" text-color="#fff" active-text-color="#409eff" @open="handleOpen" @close="handleClose">
+        <el-menu :collapse="collapse" :collapse-transition="false" router unique-opened :default-active="checked" background-color="#545c64" text-color="#fff" active-text-color="#409eff" @open="handleOpen" @close="handleClose">
         <!-- 一级菜单 -->
         <el-submenu :index="item.id + ''" v-for="item in meunList" :key="item.id">
           <!-- 一级菜单模板区域 -->
@@ -27,7 +27,7 @@
             <span>{{item.authName}}</span>
           </template>
           <!-- 二级菜单 -->
-          <el-menu-item :index="items.id + ''" v-for="items in item.children" :key="items.id">
+          <el-menu-item :index="items.path" v-for="items in item.children" :key="items.id" @click="saveNavState(items.path)">
             <i class="el-icon-menu"></i>
             <span slot="title">{{items.authName}}</span>
           </el-menu-item>
@@ -35,7 +35,9 @@
       </el-menu>
       </el-aside>
       <!-- 主体内容 -->
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -50,10 +52,15 @@ export default {
       iconList:{'125': 'el-icon-user-solid','103': 'el-icon-s-tools','101': 'el-icon-s-goods',
         '102': 'el-icon-s-order','145': 'el-icon-s-data'
       },
-      collapse: false
+      collapse: false,
+      checked: '' // 选中项路由
     }
   },
-  method: {},
+  watch: {
+    checked(val) {
+      console.log(val,'111')
+    }
+  },
   mouted() {
   },
   created() {
@@ -66,6 +73,7 @@ export default {
     .catch(err => {
       console.log(err)
     })
+    // this.checked = window.sessionStorage.getItem('checkedPath')
   },
   methods: {
     layOut() {
@@ -77,6 +85,10 @@ export default {
     },
     handleClose(){
 
+    },
+    saveNavState(data){
+      window.sessionStorage.setItem('checkedPath',data)
+      this.checked = data
     }
   }
 }

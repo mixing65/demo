@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import login from '../view/manage/login'
 import home from '../view/manage/home'
+import users from '../view/pages/user'
+import roles from '../view/pages/roles'
 // import index from '../view/index'
 // import test from '../view/test'
 // import arr from '../view/arr'
@@ -26,7 +28,20 @@ const router = new Router({
     {
       path: '/home',
       name: 'home',
-      component: home
+      component: home,
+      redirect: '/home/users',
+      children:[
+        {
+          path: 'users',
+          name: 'users',
+          component: users
+        },
+        {
+          path: 'roles',
+          name: 'roles',
+          component: roles
+        }
+      ]
     }
     // {
     //   path: '/test',

@@ -25,7 +25,13 @@ import { Button,
    Menu,
    Submenu,
    MenuItemGroup,
-   MenuItem
+   MenuItem,
+   Breadcrumb,
+   BreadcrumbItem,
+   Table,
+   TableColumn,
+   Switch,
+   Pagination
   } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
@@ -46,6 +52,13 @@ Vue.use(Input)
 .use(Submenu)
 .use(MenuItemGroup)
 .use(MenuItem)
+.use(Breadcrumb)
+.use(BreadcrumbItem)
+.use(Table)
+.use(TableColumn)
+.use(Switch)
+.use(Pagination)
+
 
 Vue.prototype.$http = axios
 
