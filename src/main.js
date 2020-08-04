@@ -31,7 +31,8 @@ import { Button,
    Table,
    TableColumn,
    Switch,
-   Pagination
+   Pagination,
+   Dialog
   } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
@@ -58,7 +59,7 @@ Vue.use(Input)
 .use(TableColumn)
 .use(Switch)
 .use(Pagination)
-
+.use(Dialog)
 
 Vue.prototype.$http = axios
 
