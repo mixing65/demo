@@ -32,10 +32,12 @@ import { Button,
    TableColumn,
    Switch,
    Pagination,
-   Dialog
+   Dialog,
+   MessageBox
   } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
+Vue.prototype.$confirm = MessageBox
 Vue.use(Button)
 Vue.use(Select)
 Vue.use(Carousel)

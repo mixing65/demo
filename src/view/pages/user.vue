@@ -31,9 +31,9 @@
           </el-table-column>
           <el-table-column prop="address" label="操作" width="200">
             <template v-slot:default="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="editInfo(scope.row.id)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteInfo(scope.row.id)"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="open"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -51,8 +51,8 @@
       <!-- 添加用户表单 -->
       <el-dialog title="添加用户" :visible.sync="dialogVisible" width="80%" >
         <el-form ref="formAddRef" :model="formAdd" label-width="80px" :rules="formAddRules">
-          <el-form-item label="用户名" prop="name">
-            <el-input v-model="formAdd.name"></el-input>
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="formAdd.username"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
             <el-input v-model="formAdd.password"></el-input>
@@ -60,13 +60,31 @@
           <el-form-item label="邮箱" prop="email">
             <el-input v-model="formAdd.email"></el-input>
           </el-form-item>
-          <el-form-item label="手机" prop="phone">
-            <el-input v-model="formAdd.phone"></el-input>
+          <el-form-item label="手机" prop="mobile">
+            <el-input v-model="formAdd.mobile"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
           <el-button @click="cancle">取 消</el-button>
           <el-button type="primary" @click="define">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 修改用户表单 -->
+      <el-dialog title="修改用户信息" :visible.sync="updatedialog" width="80%" >
+        <el-form ref="formUpdateRef" :model="formUpdate" label-width="80px" :rules="formUpdateRules">
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="formUpdate.username" :disabled="true"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="formUpdate.email"></el-input>
+          </el-form-item>
+          <el-form-item label="手机" prop="mobile">
+            <el-input v-model="formUpdate.mobile"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="cancle2">取 消</el-button>
+          <el-button type="primary" @click="define2">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -146,14 +164,14 @@ export default {
       dialogVisible: false,
       // 表单数据绑定
       formAdd:{
-        name: '',
+        username: '',
         password: '',
         email: '',
-        phone: ''
+        mobile: ''
       },
       // 表单规则
       formAddRules:{
-        name:[
+        username:[
           { required: true, message: '请输入名称', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
         ],
@@ -165,11 +183,29 @@ export default {
           { required: true, message: '请输入邮箱', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
         ],
-        phone:[
+        mobile:[
           { required: true, message: '请输入是手机号', trigger: 'blur' },
           { validator: checkPhone, trigger: 'blur' }
         ]
-      }
+      },
+      formUpdateRules:{
+        email:[
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile:[
+          { required: true, message: '请输入是手机号', trigger: 'blur' },
+          { validator: checkPhone, trigger: 'blur' }
+        ]
+      },
+      // 修改用户信息弹框
+      updatedialog: false,
+      formUpdate:{
+        username: '',
+        email: '',
+        mobile: ''
+      },
+      updateId: ''
     }
   },
   mouted() {
@@ -229,10 +265,90 @@ export default {
       this.dialogVisible = false
       // 重置表单数据及验证
       this.$refs.formAddRef.resetFields()
+      // this.$refs.formUpdateRef.resetFields()
     },
+    cancle2() {
+      this.updatedialog= false
+      // 重置表单数据及验证
+      this.$refs.formUpdateRef.resetFields()
+    },
+    // 确定
     define() {
-      this.dialogVisible = false
-    }
+      this.$refs.formAddRef.validate(valid => {
+        if(valid) {
+          this.$http.post('users',this.formAdd)
+          .then(res => {
+            this.$message.success('添加用户成功')
+            this.toSearch()
+            this.dialogVisible = false
+          })
+          .catch(err => {
+            this.$message.error('添加用户失败')
+          })
+        }
+      })
+      // this.dialogVisible = false
+    },
+    //修改用户信息
+    editInfo(id) {
+      this.updateId = id
+      this.$http.get(`users/${id}`)
+      .then(res =>{
+        console.log('res--',res.data.meta)
+        if(res.data.meta.status == '200'){
+          this.formUpdate = res.data.data
+          this.updatedialog = true
+        }
+        
+        console.log('res--',res.data.data)
+      })
+      .catch(err =>{
+        console.log('res--',err)
+      })
+    },
+    define2() {
+      this.$refs.formUpdateRef.validate(valid => {
+        if(valid) {
+          this.$http.put('users/' + this.formUpdate.id,this.formUpdate)
+          .then(res => {
+            this.$message.success('修改用户成功')
+            this.toSearch()
+            this.updatedialog= false
+          })
+          .catch(err => {
+            this.$message.error('修改用户失败')
+          })
+        }
+      })
+      // this.dialogVisible = false
+    },
+    // 删除用户信息
+    deleteInfo(id) {
+        this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.delete('users/' + id)
+          .then(res => {
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.toSearch()
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
   }
 }
 </script>
