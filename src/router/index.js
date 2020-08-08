@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import login from '../view/manage/login'
 import home from '../view/manage/home'
 import users from '../view/pages/user'
+import rights from '../view/pages/rights'
 import roles from '../view/pages/roles'
 // import index from '../view/index'
 // import test from '../view/test'
@@ -30,11 +31,16 @@ const router = new Router({
       name: 'home',
       component: home,
       redirect: '/home/users',
-      children:[
+      children: [
         {
           path: 'users',
           name: 'users',
           component: users
+        },
+        {
+          path: 'rights',
+          name: 'rights',
+          component: rights
         },
         {
           path: 'roles',
@@ -77,10 +83,10 @@ const router = new Router({
 })
 // to 将要访问的路径，form代表从哪个路径跳转来 next 是一个函数，表示放行
 // next()放行 next('/login)强制跳转页面
-router.beforeEach((to,from,next)=>{
-  if(to.path === '/login') return next()
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') return next()
   const token = window.sessionStorage.getItem('token')
-  if(!token) return next('/login')
+  if (!token) return next('/login')
   next()
 })
 export default router

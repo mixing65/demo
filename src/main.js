@@ -9,32 +9,33 @@ import echarts from 'echarts'
 import '../src/assets/css/global.css'
 import axios from 'axios'
 import { Button,
-   Select, 
-   Carousel, 
-   CarouselItem, 
-   Form, 
-   FormItem, 
-   Input,
-   Container,
-   Header,
-   Aside,
-   Main,
-   Row,
-   Col,
-   Message,
-   Menu,
-   Submenu,
-   MenuItemGroup,
-   MenuItem,
-   Breadcrumb,
-   BreadcrumbItem,
-   Table,
-   TableColumn,
-   Switch,
-   Pagination,
-   Dialog,
-   MessageBox
-  } from 'element-ui'
+  Select,
+  Carousel,
+  CarouselItem,
+  Form,
+  FormItem,
+  Input,
+  Container,
+  Header,
+  Aside,
+  Main,
+  Row,
+  Col,
+  Message,
+  Menu,
+  Submenu,
+  MenuItemGroup,
+  MenuItem,
+  Breadcrumb,
+  BreadcrumbItem,
+  Table,
+  TableColumn,
+  Switch,
+  Pagination,
+  Dialog,
+  MessageBox,
+  Tag
+} from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
@@ -45,28 +46,29 @@ Vue.use(CarouselItem)
 Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Input)
-.use(Container)
-.use(Header)
-.use(Aside)
-.use(Main)
-.use(Row)
-.use(Col)
-.use(Menu)
-.use(Submenu)
-.use(MenuItemGroup)
-.use(MenuItem)
-.use(Breadcrumb)
-.use(BreadcrumbItem)
-.use(Table)
-.use(TableColumn)
-.use(Switch)
-.use(Pagination)
-.use(Dialog)
+  .use(Container)
+  .use(Header)
+  .use(Aside)
+  .use(Main)
+  .use(Row)
+  .use(Col)
+  .use(Menu)
+  .use(Submenu)
+  .use(MenuItemGroup)
+  .use(MenuItem)
+  .use(Breadcrumb)
+  .use(BreadcrumbItem)
+  .use(Table)
+  .use(TableColumn)
+  .use(Switch)
+  .use(Pagination)
+  .use(Dialog)
+  .use(Tag)
 
 Vue.prototype.$http = axios
 
 axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
-axios.interceptors.request.use(config =>{
+axios.interceptors.request.use(config => {
   console.log(config)
   config.headers.Authorization = window.sessionStorage.getItem('token')
   return config

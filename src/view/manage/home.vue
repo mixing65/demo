@@ -45,49 +45,52 @@
 
 export default {
   name: 'home',
-  data() {
+  data () {
     return {
-      //菜单
-      meunList:[],
-      iconList:{'125': 'el-icon-user-solid','103': 'el-icon-s-tools','101': 'el-icon-s-goods',
-        '102': 'el-icon-s-order','145': 'el-icon-s-data'
+      // 菜单
+      meunList: [],
+      iconList: {'125': 'el-icon-user-solid',
+        '103': 'el-icon-s-tools',
+        '101': 'el-icon-s-goods',
+        '102': 'el-icon-s-order',
+        '145': 'el-icon-s-data'
       },
       collapse: false,
       checked: '' // 选中项路由
     }
   },
   watch: {
-    checked(val) {
-      console.log(val,'111')
+    checked (val) {
+      console.log(val, '111')
     }
   },
-  mouted() {
+  mouted () {
   },
-  created() {
+  created () {
     this.$http.get('menus').then(
       res => {
         this.meunList = res.data.data
         console.log(this.meunList)
       }
     )
-    .catch(err => {
-      console.log(err)
-    })
+      .catch(err => {
+        console.log(err)
+      })
     // this.checked = window.sessionStorage.getItem('checkedPath')
   },
   methods: {
-    layOut() {
+    layOut () {
       window.sessionStorage.removeItem('token')
       this.$router.push('/login')
     },
-    handleOpen(){
+    handleOpen () {
 
     },
-    handleClose(){
+    handleClose () {
 
     },
-    saveNavState(data){
-      window.sessionStorage.setItem('checkedPath',data)
+    saveNavState (data) {
+      window.sessionStorage.setItem('checkedPath', data)
       this.checked = data
     }
   }
@@ -108,7 +111,7 @@ export default {
       font-size: 20px;
     }
   }
-  
+
 }
 .el-header {
   background: burlywood;

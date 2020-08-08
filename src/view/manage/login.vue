@@ -28,7 +28,7 @@
 
 export default {
   name: 'home',
-  data() {
+  data () {
     return {
       // 表单数据绑定
       form: {
@@ -39,57 +39,56 @@ export default {
       rules: {
         username: [
           // require:true必填项 trigger 触发时机
-          {required: true,message: '请输入用户名',trigger:"blur" },
-          {min:3,max:10,message: '长度在3-10个字符',trigger: "blur"}
+          {required: true, message: '请输入用户名', trigger: 'blur' },
+          {min: 3, max: 10, message: '长度在3-10个字符', trigger: 'blur'}
         ],
         password: [
-          {required: true,message: '请输入密码',trigger:"blur" },
-          {min:3,max:10,message: '长度在3-10个字符',trigger: "blur"}
+          {required: true, message: '请输入密码', trigger: 'blur' },
+          {min: 3, max: 10, message: '长度在3-10个字符', trigger: 'blur'}
         ]
       }
     }
   },
   method: {},
-  mouted() {
+  mouted () {
   },
-  created() {
+  created () {
   },
   methods: {
     // 重置表单
-    cancle() {
+    cancle () {
       this.$refs.formRef.resetFields()
       // this.form = {name: '',password: ''}
     },
     // 确定提交
-    define() {
+    define () {
       // valid 验证结果布尔值
       // this.$refs.formRef.validate(async valid=> {
       //   if(!valid) return;
       //  const result = await this.$http.post('/login',this.form)
       //  console.log(result)
       // })
-      this.$refs.formRef.validate( valid=> {
-        if(!valid) return;
+      this.$refs.formRef.validate(valid => {
+        if (!valid) return
         // window.sessionStorage.setItem('login','testlogin')
-        this.$http.post('login',this.form).then(
+        this.$http.post('login', this.form).then(
           res => {
             console.log(res.data.meta.status)
-            if(res.data.meta.status != '200'){
+            if (res.data.meta.status != '200') {
               this.$message.error('登录失败')
-            }else{
+            } else {
               const token = res.data.data.token
-              window.sessionStorage.setItem('token',token)
+              window.sessionStorage.setItem('token', token)
               this.$message.success('登录成功')
-              setTimeout(()=> {
+              setTimeout(() => {
                 this.$router.push('/home')
-              },800)
+              }, 800)
             }
           }
         )
-        .catch(err=>{
-          console.log(err)
-        })
-        
+          .catch(err => {
+            console.log(err)
+          })
       })
     }
   }
@@ -124,8 +123,7 @@ export default {
     img {
       width: 100%;
       height: 100%;
-     
-      
+
     }
   }
   .loginForm {
