@@ -33,7 +33,7 @@
             <template v-slot:default="scope">
               <el-button type="primary" icon="el-icon-edit" size="mini" @click="editInfo(scope.row.id)"></el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteInfo(scope.row.id)"></el-button>
-              <el-button type="warning" icon="el-icon-setting" size="mini" @click="open"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
             </template>
           </el-table-column>
         </el-table>

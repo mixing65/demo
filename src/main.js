@@ -37,7 +37,7 @@ import { Button,
   } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
-Vue.prototype.$confirm = MessageBox
+Vue.prototype.$confirm = MessageBox.confirm
 Vue.use(Button)
 Vue.use(Select)
 Vue.use(Carousel)
