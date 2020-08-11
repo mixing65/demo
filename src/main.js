@@ -34,7 +34,8 @@ import { Button,
   Pagination,
   Dialog,
   MessageBox,
-  Tag
+  Tag,
+  Tree
 } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
@@ -64,6 +65,7 @@ Vue.use(Input)
   .use(Pagination)
   .use(Dialog)
   .use(Tag)
+  .use(Tree)
 
 Vue.prototype.$http = axios
 

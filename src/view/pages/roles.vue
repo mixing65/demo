@@ -45,7 +45,7 @@
           <template v-slot:default="scope">
               <el-button type="primary" icon="el-icon-edit" size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteInfo(scope.row.id)">删除</el-button>
-              <el-button type="warning" icon="el-icon-setting" size="mini">分配权限</el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="playRoles(scope.row)">分配权限</el-button>
             </template>
         </el-table-column>
       </el-table>
@@ -80,6 +80,16 @@
           <el-button type="primary" @click="updateDefine">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- 分配权限 -->
+      <el-dialog title="分配权限" :visible.sync="playdialogVisible" width="80%" @close="closeDialog">
+        <el-tree :data="rightsList" show-checkbox node-key="id" default-expand-all :default-checked-keys="checkArray"
+          :props="defaultProps">
+        </el-tree>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="cancle2">取 消</el-button>
+          <el-button type="primary" @click="updateDefine">确 定</el-button>
+        </span>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -95,6 +105,7 @@ export default {
       ],
       dialogVisible: false,
       updatedialogVisible: false,
+      playdialogVisible: false,
       formAdd: {
         roleName: '',
         roleDesc: ''
@@ -112,7 +123,13 @@ export default {
           { required: true, message: '请输入描述', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
         ]
-      }
+      },
+      rightsList: [],
+      defaultProps: {
+        children: 'children',
+        label: 'authName'
+      },
+      checkArray: []
 
     }
   },
@@ -130,6 +147,7 @@ export default {
           } else {
             console.log('res', res.data)
             this.tableData = res.data.data
+            console.log('this.tableData---', this.tableData)
           }
         })
         .catch(err => {
@@ -144,6 +162,9 @@ export default {
       this.$refs.formAddRef.resetFields()
       this.dialogVisible = false
       this.updatedialogVisible = false
+    },
+    cancle2 () {
+      this.playdialogVisible = false
     },
     define () {
       this.$http.post('roles', this.formAdd).then(res => {
@@ -229,6 +250,34 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    // 分配权限
+    playRoles (role) {
+      console.log('role----------', role)
+      this.$http.get('rights/tree')
+        .then(res => {
+          this.rightsList = res.data.data
+          console.log('rights/tree', res.data.data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      this.getLefKeys(role, this.checkArray)
+      this.playdialogVisible = true
+    },
+    // 获取三级权限id
+    getLefKeys (node, arr) {
+      // 如果当前node节点不包含children属性，则是三级节点
+      if (!node.children) {
+        return arr.push(node.id)
+      } else {
+        node.children.forEach(item => {
+          this.getLefKeys(item, arr)
+        })
+      }
+    },
+    closeDialog () {
+      this.checkArray = []
     }
   }
 }
