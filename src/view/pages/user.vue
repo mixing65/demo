@@ -33,7 +33,7 @@
             <template v-slot:default="scope">
               <el-button type="primary" icon="el-icon-edit" size="mini" @click="editInfo(scope.row.id)"></el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteInfo(scope.row.id)"></el-button>
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRoles(scope.row)"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -85,6 +85,31 @@
         <span slot="footer" class="dialog-footer">
           <el-button @click="cancle2">取 消</el-button>
           <el-button type="primary" @click="define2">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 分配角色表单 -->
+      <el-dialog title="分配角色" :visible.sync="setRolesDialog" width="80%" @close="closeDialog">
+        <el-form ref="formUpdateRef" :model="userInfo" label-width="120px" :rules="formUpdateRules">
+          <el-form-item label="当前用户">
+            <el-input v-model="userInfo.username" :disabled="true"></el-input>
+          </el-form-item>
+          <el-form-item label="当前角色">
+            <el-input v-model="userInfo.role_name" :disabled="true"></el-input>
+          </el-form-item>
+          <el-form-item label="分配新角色">
+            <el-select v-model="newsRoles" placeholder="请选择">
+              <el-option
+                v-for="item in roleList"
+                :key="item.id"
+                :label="item.roleName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="cancle3">取 消</el-button>
+          <el-button type="primary" @click="resetRoles">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -205,7 +230,13 @@ export default {
         email: '',
         mobile: ''
       },
-      updateId: ''
+      updateId: '',
+      // 分配角色
+      setRolesDialog: false,
+      userInfo: {},
+      roleList: [],
+      newsRoles: ''
+
     }
   },
   mouted () {
@@ -270,6 +301,9 @@ export default {
       this.updatedialog = false
       // 重置表单数据及验证
       this.$refs.formUpdateRef.resetFields()
+    },
+    cancle3 () {
+      this.setRolesDialog = false
     },
     // 确定
     define () {
@@ -347,6 +381,31 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    // 分配角色
+    setRoles (userInfo) {
+      this.userId = userInfo.id
+      this.$http.get('roles').then(res => {
+        console.log('userInfores---', res.data.data)
+        this.roleList = res.data.data
+      }).catch(err => {
+        console.log('userInfoerr---', res)
+      })
+      this.userInfo = userInfo
+      this.setRolesDialog = true
+    },
+    // 保存修改角色
+    resetRoles () {
+      this.$http.put(`users/${this.userInfo.id}/role`, {rid: this.newsRoles}).then(res => {
+        this.$message.success('修改角色成功')
+        this.setRolesDialog = false
+        this.toSearch()
+      }).catch(err => {
+        this.$message.error('修改角色失败')
+      })
+    },
+    closeDialog () {
+      this.newsRoles = ''
     }
   }
 }

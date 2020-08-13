@@ -83,11 +83,11 @@
       <!-- 分配权限 -->
       <el-dialog title="分配权限" :visible.sync="playdialogVisible" width="80%" @close="closeDialog">
         <el-tree :data="rightsList" show-checkbox node-key="id" default-expand-all :default-checked-keys="checkArray"
-          :props="defaultProps">
+          :props="defaultProps" ref="treeRef">
         </el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button @click="cancle2">取 消</el-button>
-          <el-button type="primary" @click="updateDefine">确 定</el-button>
+          <el-button type="primary" @click="updateRoles">确 定</el-button>
         </span>
       </el-dialog>
   </div>
@@ -129,7 +129,8 @@ export default {
         children: 'children',
         label: 'authName'
       },
-      checkArray: []
+      checkArray: [],
+      saveId: ''
 
     }
   },
@@ -183,6 +184,7 @@ export default {
       this.$http.get('roles/' + id).then(res => {
         this.$message.success('查询用户成功')
         this.formUpdate = res.data.data
+      // eslint-disable-next-line handle-callback-err
       }).catch(err => {
         this.$message.error('查询用户失败')
       })
@@ -253,7 +255,8 @@ export default {
     },
     // 分配权限
     playRoles (role) {
-      console.log('role----------', role)
+      this.saveId = role.id
+      console.log('this.saveId----------', role.id)
       this.$http.get('rights/tree')
         .then(res => {
           this.rightsList = res.data.data
@@ -278,6 +281,20 @@ export default {
     },
     closeDialog () {
       this.checkArray = []
+    },
+    // 修改角色权限
+    updateRoles (row) {
+      console.log(' this.saveId', this.saveId)
+      let keys = [...this.$refs.treeRef.getCheckedKeys(), ...this.$refs.treeRef.getHalfCheckedNodes()]
+      let idStr = keys.join(',')
+      this.$http.post(`roles/${this.saveId}/rights`, {rids: idStr}).then(res => {
+        this.$message.success('分配角色成功')
+        this.getRolesList()
+        this.playdialogVisible = false
+      // eslint-disable-next-line handle-callback-err
+      }).catch(err => {
+        this.$message.error('分配角色失败')
+      })
     }
   }
 }
