@@ -7,7 +7,9 @@ import router from './router'
 import echarts from 'echarts'
 // 导入全局样式表
 import '../src/assets/css/global.css'
+import ZkTable from 'vue-table-with-tree-grid'
 import axios from 'axios'
+
 import { Button,
   Select,
   Carousel,
@@ -68,6 +70,7 @@ Vue.use(Input)
   .use(Tag)
   .use(Tree)
   .use(Option)
+  .use(ZkTable)
 
 Vue.prototype.$http = axios
 
@@ -79,7 +82,7 @@ axios.interceptors.request.use(config => {
 })
 // axios.defaults.baseURL = 'https://easy-mock.com/mock/5f16da6dee31c413514f6419/study'
 Vue.config.productionTip = false
-
+// Vue.component('zk-table', ZkTable)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

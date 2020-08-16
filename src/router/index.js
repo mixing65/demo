@@ -5,6 +5,7 @@ import home from '../view/manage/home'
 import users from '../view/pages/user'
 import rights from '../view/pages/rights'
 import roles from '../view/pages/roles'
+import goodsSort from '../view/pages/goodsSort'
 // import index from '../view/index'
 // import test from '../view/test'
 // import arr from '../view/arr'
@@ -46,6 +47,11 @@ const router = new Router({
           path: 'roles',
           name: 'roles',
           component: roles
+        },
+        {
+          path: 'categories',
+          name: 'goodsSort',
+          component: goodsSort
         }
       ]
     }
