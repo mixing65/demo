@@ -38,7 +38,8 @@ import { Button,
   MessageBox,
   Tag,
   Tree,
-  Option
+  Option,
+  Cascader
 } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
@@ -71,6 +72,7 @@ Vue.use(Input)
   .use(Tree)
   .use(Option)
   .use(ZkTable)
+  .use(Cascader)
 
 Vue.prototype.$http = axios
 

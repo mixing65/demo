@@ -20,12 +20,12 @@
             <el-tag type="success" size="mini" v-else-if="scope.row.cat_level === 1">二级</el-tag>
             <el-tag type="warning" size="mini" v-else>三级</el-tag>
           </template>
-        </zk-table>
-        <!-- 操作 -->
-          <template slot="opt" slot-scope="scope">
+          <!-- 操作 -->
+          <template slot="opt">
             <el-button type="primary" icon="el-icon-edit" size="mini">搜索</el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini">搜索</el-button>
           </template>
+        </zk-table>
        <!-- 分页 -->
         <el-pagination
           @size-change="handleSizeChange"
@@ -43,7 +43,15 @@
               <el-input v-model="formAdd.name"></el-input>
             </el-form-item>
             <el-form-item label="父级分类">
-              <!-- <el-input v-model="formUpdate.catPid"></el-input> -->
+              <!-- 连级选择 -->
+                <el-cascader
+                style="width:100%"
+                  v-model="selectValue"
+                  :options="parentList"
+                  :props="{ expandTrigger: 'hover',value: 'cat_id',label: 'cat_name',children: 'children' }"
+                  @change="handleChange"
+                  :clearable="true">
+                </el-cascader>
             </el-form-item>
           </el-form>
           <span slot="footer" class="dialog-footer">
@@ -105,7 +113,9 @@ export default {
         catPid: 0,
         catLevel: 0
 
-      }
+      },
+      parentList: [],
+      selectValue: []
     }
   },
   method: {},
@@ -135,6 +145,7 @@ export default {
       this.getcategoriesList()
     },
     addSort () {
+      this.getParent()
       this.dialogVisible = true
     },
     cancle () {
@@ -142,6 +153,18 @@ export default {
     },
     define () {
       this.dialogVisible = false
+    },
+    // 获取父级分类数据列表
+    getParent () {
+      this.$http.get('categories', {params: {type: 2}}).then(res => {
+        // console.log(res.data.data)
+        this.parentList = res.data.data
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    handleChange () {
+
     }
 
   }
