@@ -6,19 +6,51 @@
         <el-breadcrumb-item><a href="/">商品管理</a></el-breadcrumb-item>
         <el-breadcrumb-item>商品分类</el-breadcrumb-item>
       </el-breadcrumb>
-      <el-button type="primary">添加分类</el-button>
+      <el-button type="primary" @click="addSort">添加分类</el-button>
       <!-- 表格区域 -->
-        <zk-table :data="categoriesList" :columns="columsList"></zk-table>
+        <zk-table :data="categoriesList" :columns="columsList" :selection-type="false">
+          <!-- 是否有效 -->
+          <template slot="isOk" slot-scope="scope">
+            <i class="el-icon-success" v-if="scope.row.cat_deleted === false" style="color:green"></i>
+            <i class="el-icon-error" v-else style="color:red"></i>
+          </template>
+          <!-- 排序 -->
+          <template slot="order" slot-scope="scope">
+            <el-tag type="success" size="mini" v-if="scope.row.cat_level === 0">一级</el-tag>
+            <el-tag type="success" size="mini" v-else-if="scope.row.cat_level === 1">二级</el-tag>
+            <el-tag type="warning" size="mini" v-else>三级</el-tag>
+          </template>
+        </zk-table>
+        <!-- 操作 -->
+          <template slot="opt" slot-scope="scope">
+            <el-button type="primary" icon="el-icon-edit" size="mini">搜索</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini">搜索</el-button>
+          </template>
        <!-- 分页 -->
-        <!-- <el-pagination
+        <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="pagenum"
+          :current-page="queryInfo.pagenum"
           :page-sizes="[10, 20, 30, 40]"
-          :page-size="pagesize"
+          :page-size="queryInfo.pagesize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.totals">
-        </el-pagination> -->
+          :total="total">
+        </el-pagination>
+        <!-- 添加分类对话框 -->
+        <el-dialog title="添加分类" :visible.sync="dialogVisible" width="80%">
+          <el-form ref="formAddRef" :model="formAdd" label-width="80px" :rules="formAddRules">
+            <el-form-item label="分类名称" prop="catName">
+              <el-input v-model="formAdd.name"></el-input>
+            </el-form-item>
+            <el-form-item label="父级分类">
+              <!-- <el-input v-model="formUpdate.catPid"></el-input> -->
+            </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="cancle">取 消</el-button>
+            <el-button type="primary" @click="define">确 定</el-button>
+          </span>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -38,10 +70,42 @@ export default {
         {
           label: '分类名称',
           prop: 'cat_name'
+        },
+        {
+          label: '是否有效',
+          type: 'template',
+          // 这一列模板
+          template: 'isOk'
+        },
+        {
+          label: '排序',
+          type: 'template',
+          // 这一列模板
+          template: 'order'
+        },
+        {
+          label: '操作',
+          type: 'template',
+          // 这一列模板
+          template: 'opt'
         }
       ],
       // 总数据条数
-      total: 0
+      total: 0,
+      // 添加分类对话框
+      dialogVisible: false,
+      formAddRules: {
+        catName: [
+          { required: true, message: '请输入分类名称', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ]
+      },
+      formAdd: {
+        name: '',
+        catPid: 0,
+        catLevel: 0
+
+      }
     }
   },
   method: {},
@@ -60,7 +124,26 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+    // 监听pagesize变化
+    handleSizeChange (newSize) {
+      this.queryInfo.pagesize = newSize
+      this.getcategoriesList()
+    },
+    handleCurrentChange (newNum) {
+      this.queryInfo.pagenum = newNum
+      this.getcategoriesList()
+    },
+    addSort () {
+      this.dialogVisible = true
+    },
+    cancle () {
+      this.dialogVisible = false
+    },
+    define () {
+      this.dialogVisible = false
     }
+
   }
 }
 </script>
