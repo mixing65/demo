@@ -21,9 +21,9 @@
             <el-tag type="warning" size="mini" v-else>三级</el-tag>
           </template>
           <!-- 操作 -->
-          <template slot="opt">
-            <el-button type="primary" icon="el-icon-edit" size="mini">搜索</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini">搜索</el-button>
+          <template slot="opt" slot-scope="scope">
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="editSort(scope.row.cat_id)">编辑</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteSort(scope.row.cat_id)">搜索</el-button>
           </template>
         </zk-table>
        <!-- 分页 -->
@@ -37,10 +37,10 @@
           :total="total">
         </el-pagination>
         <!-- 添加分类对话框 -->
-        <el-dialog title="添加分类" :visible.sync="dialogVisible" width="80%">
+        <el-dialog title="添加分类" :visible.sync="dialogVisible" width="80%" @close="closeDialog">
           <el-form ref="formAddRef" :model="formAdd" label-width="80px" :rules="formAddRules">
-            <el-form-item label="分类名称" prop="catName">
-              <el-input v-model="formAdd.name"></el-input>
+            <el-form-item label="分类名称" prop="name">
+              <el-input v-model="formAdd.cat_name"></el-input>
             </el-form-item>
             <el-form-item label="父级分类">
               <!-- 连级选择 -->
@@ -48,15 +48,29 @@
                 style="width:100%"
                   v-model="selectValue"
                   :options="parentList"
-                  :props="{ expandTrigger: 'hover',value: 'cat_id',label: 'cat_name',children: 'children' }"
+                  :props="{ expandTrigger: 'hover',checkStrictly: true,value: 'cat_id',label: 'cat_name',children: 'children' }"
                   @change="handleChange"
-                  :clearable="true">
+                  :clearable="true"
+                 >
                 </el-cascader>
             </el-form-item>
           </el-form>
           <span slot="footer" class="dialog-footer">
             <el-button @click="cancle">取 消</el-button>
             <el-button type="primary" @click="define">确 定</el-button>
+          </span>
+        </el-dialog>
+         <!-- 修改分类对话框 -->
+        <el-dialog title="修改分类" :visible.sync="editDialogVisible" width="80%" @close="closeDialog">
+          <el-form ref="formAddRef" :model="formUpdate" label-width="80px">
+            <el-form-item label="分类名称" prop="name">
+              <el-input v-model="formUpdate.cat_name"></el-input>
+            </el-form-item>
+            </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="cancle">取 消</el-button>
+            <el-button type="primary" @click="define2">确 定</el-button>
           </span>
         </el-dialog>
     </div>
@@ -103,19 +117,21 @@ export default {
       // 添加分类对话框
       dialogVisible: false,
       formAddRules: {
-        catName: [
+        name: [
           { required: true, message: '请输入分类名称', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ]
       },
       formAdd: {
-        name: '',
-        catPid: 0,
-        catLevel: 0
-
+        cat_name: '',
+        cat_pid: 0,
+        cat_level: 0
       },
       parentList: [],
-      selectValue: []
+      selectValue: [],
+      formUpdate: {cat_name: ''},
+      editDialogVisible: false,
+      saveId: ''
     }
   },
   method: {},
@@ -153,6 +169,14 @@ export default {
     },
     define () {
       this.dialogVisible = false
+      console.log('this.formAdd', this.formAdd)
+      this.$http.post('categories', this.formAdd).then(res => {
+        this.$message.success('添加分类成功')
+        this.getcategoriesList()
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('添加分类失败')
+      })
     },
     // 获取父级分类数据列表
     getParent () {
@@ -163,8 +187,69 @@ export default {
         console.log(err)
       })
     },
-    handleChange () {
-
+    handleChange (nes) {
+      console.log('nes', nes)
+      if (this.selectValue.length > 0) {
+        // 父级分类id
+        this.formAdd.cat_pid = this.selectValue[this.selectValue.length - 1]
+        // level值
+        this.formAdd.cat_level = this.selectValue.length
+      } else {
+        this.formAdd.cat_pid = 0
+        this.formAdd.cat_level = 0
+      }
+    },
+    // 重置表单
+    closeDialog () {
+      this.$refs.formAddRef.resetFields()
+      this.formAdd = {}
+      this.selectValue = []
+    },
+    editSort (catId) {
+      this.saveId = catId
+      console.log('catId', catId)
+      this.editDialogVisible = true
+      this.$http.get('categories/' + catId).then(res => {
+        this.$message.success('查询分类成功')
+        this.formUpdate.cat_name = res.data.data.cat_name
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('查询分类失败')
+      })
+    },
+    deleteSort (id) {
+      this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http.delete('categories/' + id)
+          .then(res => {
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getcategoriesList()
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    define2 () {
+      this.$http.put('categories/' + this.saveId, this.formUpdate).then(res => {
+        this.$message.success('修改分类成功')
+        this.getcategoriesList()
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('修改分类失败')
+      })
     }
 
   }
