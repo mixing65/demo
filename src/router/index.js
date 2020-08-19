@@ -6,6 +6,7 @@ import users from '../view/pages/user'
 import rights from '../view/pages/rights'
 import roles from '../view/pages/roles'
 import goodsSort from '../view/pages/goodsSort'
+import params from '../view/pages/params'
 // import index from '../view/index'
 // import test from '../view/test'
 // import arr from '../view/arr'
@@ -52,6 +53,11 @@ const router = new Router({
           path: 'categories',
           name: 'goodsSort',
           component: goodsSort
+        },
+        {
+          path: 'params',
+          name: 'params',
+          component: params
         }
       ]
     }

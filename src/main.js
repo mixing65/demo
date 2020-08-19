@@ -39,7 +39,10 @@ import { Button,
   Tag,
   Tree,
   Option,
-  Cascader
+  Cascader,
+  Alert,
+  Tabs,
+  TabPane
 } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
@@ -73,6 +76,9 @@ Vue.use(Input)
   .use(Option)
   .use(ZkTable)
   .use(Cascader)
+  .use(Alert)
+  .use(Tabs)
+  .use(TabPane)
 
 Vue.prototype.$http = axios
 

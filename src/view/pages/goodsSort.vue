@@ -66,7 +66,6 @@
             <el-form-item label="分类名称" prop="name">
               <el-input v-model="formUpdate.cat_name"></el-input>
             </el-form-item>
-            </el-form-item>
           </el-form>
           <span slot="footer" class="dialog-footer">
             <el-button @click="cancle">取 消</el-button>
