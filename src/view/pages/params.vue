@@ -24,11 +24,33 @@
           </el-col>
         </el-row>
          <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="动态参数" name="first">
+            <el-tab-pane label="动态参数" name="many">
               <el-button type="primary" :disabled="selectValue.length < 1">添加参数</el-button>
+              <!-- 动态参数表格 -->
+              <el-table :data="manyTab">
+                <el-table-column type="index"></el-table-column>
+                <el-table-column label="参数名称" prop="attr_name"></el-table-column>
+                <el-table-column label="操作">
+                 <template slot-scope="scope">
+                    <el-button type="primary" icon="el-icon-edit" size="mini">修改</el-button>
+                    <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+                 </template>
+                </el-table-column>
+              </el-table>
             </el-tab-pane>
-            <el-tab-pane label="静态属性" name="second">
+            <el-tab-pane label="静态属性" name="only">
               <el-button type="primary" :disabled="selectValue.length < 1">添加属性</el-button>
+               <!-- 静态参数表格 -->
+              <el-table :data="onlyTab">
+                <el-table-column type="index"></el-table-column>
+                <el-table-column label="属性名称" prop="attr_name"></el-table-column>
+                <el-table-column label="操作">
+                 <template slot-scope="scope">
+                    <el-button type="primary" icon="el-icon-edit" size="mini">修改</el-button>
+                    <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+                 </template>
+                </el-table-column>
+              </el-table>
             </el-tab-pane>
           </el-tabs>
         <!-- 添加分类对话框 -->
@@ -66,7 +88,9 @@ export default {
       categoriesList: [],
       // 查询条件
       selectValue: [],
-      activeName: 'first'
+      activeName: 'many',
+      manyTab: [],
+      onlyTab: []
     }
   },
   method: {},
@@ -85,54 +109,30 @@ export default {
         console.log(err)
       })
     },
-    // 监听pagesize变化
-    handleSizeChange (newSize) {
-      this.queryInfo.pagesize = newSize
-      this.getcategoriesList()
+    // 标签页切换
+    handleClick () {
+      console.log(this.activeName)
+      this.getList()
     },
-    handleCurrentChange (newNum) {
-      this.queryInfo.pagenum = newNum
-      this.getcategoriesList()
+    handleChange () {
+      console.log(this.selectValue)
+      this.getList()
     },
-    addSort () {
-      this.getParent()
-      this.dialogVisible = true
-    },
-    cancle () {
-      this.dialogVisible = false
-    },
-    define () {
-      this.dialogVisible = false
-      console.log('this.formAdd', this.formAdd)
-      this.$http.post('categories', this.formAdd).then(res => {
+    // 获取三级连选值
+    getList () {
+      this.$http.get(`categories/${this.selectValue[this.selectValue.length - 1]}/attributes`, {params: {sel: this.activeName}}).then(res => {
         this.$message.success('添加分类成功')
         this.getcategoriesList()
+        if (this.activeName === 'many') {
+          this.manyTab = res.data.data
+          console.log('this.manyTab', this.manyTab)
+        } else {
+          this.onlyTab = res.data.data
+        }
       }).catch(err => {
         console.log(err)
         this.$message.error('添加分类失败')
       })
-    },
-    // 获取父级分类数据列表
-    getParent () {
-      this.$http.get('categories', {params: {type: 2}}).then(res => {
-        // console.log(res.data.data)
-        this.parentList = res.data.data
-      }).catch(err => {
-        console.log(err)
-      })
-    },
-    // 重置表单
-    closeDialog () {
-      this.$refs.formAddRef.resetFields()
-      this.formAdd = {}
-      this.selectValue = []
-    },
-    // 标签页切换
-    handleClick () {
-
-    },
-    handleChange () {
-
     }
 
   }
