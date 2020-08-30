@@ -26,22 +26,60 @@
          <el-tabs v-model="activeName" @tab-click="handleClick">
             <el-tab-pane label="动态参数" name="many">
               <el-button type="primary" :disabled="selectValue.length < 1" @click="adddialogVisible = true">添加参数</el-button>
-              <!-- 动态参数表格 -->
+                <!-- 动态参数表格 -->
               <el-table :data="manyTab">
-                <el-table-column type="index"></el-table-column>
-                <el-table-column label="参数名称" prop="attr_name"></el-table-column>
-                <el-table-column label="操作">
-                 <template slot-scope="scope">
-                    <el-button type="primary" icon="el-icon-edit" size="mini" @click="editMethods(scope.row.attr_id)">修改</el-button>
-                    <el-button type="danger" icon="el-icon-delete" size="mini" @click="deletedMethods(scope.row.attr_id)">删除</el-button>
-                 </template>
+                    <!-- 展开行 -->
+                <el-table-column type="expand">
+                  <template slot-scope="scope">
+                    <el-tag v-for="(item,i) in scope.row.attr_vals" :key="i" closable @close="deleteTags(scope.row,i)">
+                      {{item}}
+                    </el-tag>
+                      <!-- 输入文本框 -->
+                      <el-input
+                        v-if="scope.row.inputVisible"
+                        v-model="scope.row.inputValue"
+                        ref="saveTagInput"
+                        size="small"
+                        @keyup.enter.native="handleInputConfirm(scope.row)"
+                        @blur="handleInputConfirm(scope.row)"
+                      >
+                      </el-input>
+                      <el-button v-else size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+                  </template>
                 </el-table-column>
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column label="参数名称" prop="attr_name"></el-table-column>
+                    <el-table-column label="操作">
+                      <template slot-scope="scope">
+                        <el-button type="primary" icon="el-icon-edit" size="mini" @click="editMethods(scope.row.attr_id)">修改</el-button>
+                        <el-button type="danger" icon="el-icon-delete" size="mini" @click="deletedMethods(scope.row.attr_id)">删除</el-button>
+                      </template>
+                    </el-table-column>
               </el-table>
             </el-tab-pane>
             <el-tab-pane label="静态属性" name="only">
               <el-button type="primary" :disabled="selectValue.length < 1" @click="adddialogVisible = true">添加属性</el-button>
                <!-- 静态参数表格 -->
               <el-table :data="onlyTab">
+                <!-- 展开行 -->
+                <el-table-column type="expand">
+                  <template slot-scope="scope">
+                    <el-tag v-for="(item,i) in scope.row.attr_vals" :key="i" closable @close="deleteTags(scope.row,i)">
+                      {{item}}
+                    </el-tag>
+                      <!-- 输入文本框 -->
+                      <el-input
+                        v-if="scope.row.inputVisible"
+                        v-model="scope.row.inputValue"
+                        ref="saveTagInput"
+                        size="small"
+                        @keyup.enter.native="handleInputConfirm(scope.row)"
+                        @blur="handleInputConfirm(scope.row)"
+                      >
+                      </el-input>
+                      <el-button v-else size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+                  </template>
+                </el-table-column>
                 <el-table-column type="index"></el-table-column>
                 <el-table-column label="属性名称" prop="attr_name"></el-table-column>
                 <el-table-column label="操作">
@@ -96,16 +134,15 @@ export default {
       formAdd: {
         attr_name: ''
       },
-      attrId: ''
+      attrId: '',
+      showInp: false
     }
   },
   method: {},
   mouted () {
-    this.test()
   },
   created () {
     this.getcategoriesList()
-    this.test()
   },
   methods: {
     getcategoriesList () {
@@ -132,9 +169,21 @@ export default {
         this.$message.success('添加分类成功')
         this.getcategoriesList()
         if (this.activeName === 'many') {
+          res.data.data.forEach(element => {
+            element.attr_vals = element.attr_vals ? element.attr_vals.split(' ') : []
+            element.inputVisible = false
+            element.inputVale = ''
+            console.log('element.attr_vals---', element.attr_vals)
+          })
           this.manyTab = res.data.data
           console.log('this.manyTab', this.manyTab)
         } else {
+          res.data.data.forEach(element => {
+            element.attr_vals = element.attr_vals ? element.attr_vals.split(' ') : []
+            element.inputVisible = false
+            element.inputVale = ''
+            console.log('element.attr_vals---', element.attr_vals)
+          })
           this.onlyTab = res.data.data
         }
       }).catch(err => {
@@ -227,6 +276,44 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    handleInputConfirm (row) {
+      row.inputVisible = false
+      console.log('scope.row.inputValue', row.inputValue)
+      if (!row.inputValue) {
+        return false
+      } else {
+        row.attr_vals.push(row.inputValue.trim())
+        console.log('row.attr_vals---', row.attr_vals)
+        this.$http.put(`categories/${this.selectValue[this.selectValue.length - 1]}/attributes/${row.attr_id}`, {
+          attr_name: row.attr_name,
+          attr_sel: row.attr_sel,
+          attr_vals: row.attr_vals.join(' ')
+        }).then(res => {
+          console.log(res)
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    },
+    showInput (scope) {
+      scope.inputVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    // 删除标签属性
+    deleteTags (row, i) {
+      row.attr_vals.splice(i)
+      this.$http.put(`categories/${this.selectValue[this.selectValue.length - 1]}/attributes/${row.attr_id}`, {
+        attr_name: row.attr_name,
+        attr_sel: row.attr_sel,
+        attr_vals: row.attr_vals.join(' ')
+      }).then(res => {
+        console.log(res)
+      }).catch(err => {
+        console.log(err)
+      })
     }
 
   }
@@ -235,6 +322,9 @@ export default {
 <style lang="less" scoped>
 .el-alert {
   margin: 20px 0;
+}
+/deep/.el-input--small .el-input__inner {
+  width: 100px;
 }
 
 </style>
