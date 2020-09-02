@@ -8,6 +8,7 @@ import roles from '../view/pages/roles'
 import goodsSort from '../view/pages/goodsSort'
 import params from '../view/pages/params'
 import goods from '../view/pages/goods'
+import addGoods from '../view/pages/addGoods'
 // import index from '../view/index'
 // import test from '../view/test'
 // import arr from '../view/arr'
@@ -64,6 +65,11 @@ const router = new Router({
           path: 'goods',
           name: 'goods',
           component: goods
+        },
+        {
+          path: 'addGoods',
+          name: 'addGoods',
+          component: addGoods
         }
       ]
     }

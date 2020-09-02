@@ -13,19 +13,47 @@
           title="添加商品信息！" type="info" center show-icon>
         </el-alert>
         <!-- 顶部进度条 -->
-        <el-steps :space="200" :active="active" finish-status="success">
-          <el-step title="已完成"></el-step>
-          <el-step title="进行中"></el-step>
-          <el-step title="步骤 3"></el-step>
+        <el-steps :space="200" :active="active -0" finish-status="success">
+          <el-step title="基本信息"></el-step>
+          <el-step title="商品参数"></el-step>
+          <el-step title="商品属性"></el-step>
+          <el-step title="商品图片"></el-step>
+          <el-step title="商品内容"></el-step>
+          <el-step title="完成"></el-step>
         </el-steps>
         <!-- 侧边导航 -->
-        <el-tabs tab-position="left" style="height: 200px;">
-          <el-tab-pane label="用户管理">用户管理</el-tab-pane>
-          <el-tab-pane label="配置管理">配置管理</el-tab-pane>
-          <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-          <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
-        </el-tabs>
-
+        <el-form ref="formAddRef" :model="formAdd" label-width="80px" :rules="formAddRules" label-position="top">
+            <el-tabs tab-position="left" v-model="active" :before-leave="checkTabs">
+              <el-tab-pane label="基本信息" name="0">
+                <el-form-item label="商品名称" prop="goods_name">
+                  <el-input v-model="formAdd.goods_name"></el-input>
+                </el-form-item>
+                <el-form-item label="商品价格" prop="goods_price">
+                  <el-input v-model="formAdd.goods_price"></el-input>
+                </el-form-item>
+                <el-form-item label="商品重量" prop="goods_weight">
+                  <el-input v-model="formAdd.goods_weight"></el-input>
+                </el-form-item>
+                <el-form-item label="商品数量" prop="goods_number">
+                  <el-input v-model="formAdd.goods_number"></el-input>
+                </el-form-item>
+                <el-form-item label="商品分类" prop="email">
+                  <el-cascader
+                    style="width:40%" v-model="formAdd.goods_cat"
+                    :options="categoriesList"
+                    :props="{ expandTrigger: 'hover',value: 'cat_id',label: 'cat_name',children: 'children' }"
+                    @change="handleChange"
+                    :clearable="true"
+                    >
+                    </el-cascader>
+                </el-form-item>
+              </el-tab-pane>
+              <el-tab-pane label="商品参数" name="1">配置管理</el-tab-pane>
+              <el-tab-pane label="商品属性" name="2">角色管理</el-tab-pane>
+              <el-tab-pane label="商品图片" name="3">定时任务补偿</el-tab-pane>
+              <el-tab-pane label="商品内容" name="4">定时任务补偿</el-tab-pane>
+            </el-tabs>
+        </el-form>
     </div>
 </template>
 <script>
@@ -34,20 +62,35 @@ export default {
   data () {
     return {
       // 查询条件
-      active: 1
+      active: '0',
+      // 三级连选数据
+      categoriesList: [],
+      formAdd: {
+        goods_name: '',
+        goods_price: '',
+        goods_weight: '',
+        goods_number: '',
+        goods_cat: ''
+      },
+      // 三级连选绑定值
+      selectValue: [],
+      // 表单校验
+      formAddRules: {
+        goods_name: [
+          { required: true, message: '请输入商品名称', trigger: 'blur' }
+        ],
+        goods_price: [
+          { required: true, message: '请输入商品价格', trigger: 'blur' }
+        ],
+        goods_weight: [
+          { required: true, message: '请输入商品重量', trigger: 'blur' }
+        ],
+        goods_number: [
+          { required: true, message: '请输入商品数量', trigger: 'blur' }
+        ]
 
-    }
-  },
-  filters: {
-    dateFormat (val) {
-      const dt = new Date(val)
-      const y = dt.getFullYear()
-      const m = (dt.getMonth() + 1 + '').padStart(2, '0')
-      const d = (dt.getDate() + '').padStart(2, '0')
-      const hh = (dt.getHours() + '').padStart(2, '0')
-      const mm = (dt.getMinutes() + '').padStart(2, '0')
-      const ss = (dt.getSeconds() + '').padStart(2, '0')
-      return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+      }
+
     }
   },
   mouted () {
@@ -56,77 +99,23 @@ export default {
     this.getGoodsList()
   },
   methods: {
-    getGoodsList () {
-      this.$http.get('goods', {params: this.queryObj})
-        .then(res => {
-          console.log('goods---', res.data.data.total)
-          this.goodsData = res.data.data.goods
-          this.pagination.totals = res.data.data.total
-        })
-        .catch(err => {
-          console.log('err', err)
-        })
-    },
-    // 查询表格
-    toSearch () {
+    // 三级连选
+    handleChange () {
       this.getGoodsList()
     },
-    // 添加商品
-    addGoods () {
-      this.$router.push('/goods/addGoods')
-    },
-    // 表格编辑
-    editInfo () {
+    // 三级连选数据来源
+    getGoodsList () {
+      this.$http.get('/categories').then(res => {
+        this.categoriesList = res.data.data
+      }).catch(err => {
 
-    },
-    // 表格删除
-    deleteInfo (id) {
-      this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$http.delete('goods/' + id)
-          .then(res => {
-            console.log(res)
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            this.getGoodsList()
-          })
-          .catch(err => {
-            console.log(err)
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
     },
-    // 显示条数改变
-    handleSizeChange (newSize) {
-      this.queryObj.pagesize = newSize
-      this.getGoodsList()
-    },
-    // 页码改变
-    handleCurrentChange (newCurrent) {
-      this.queryObj.pagenum = newCurrent
-      this.getGoodsList()
-    },
-    // 改变用户状态
-    changeUserStatus (val) {
-      console.log('val--', val)
-      // val.mg_state = !val.mg_state
-      this.$http.put(`users/${val.id}/state/${val.mg_state}`)
-        .then(res => {
-          this.$message.success('修改用户状态成功')
-        })
-        .catch(err => {
-          val.mg_state = !val.mg_state
-          this.$message.error('修改用户状态失败')
-        })
+    checkTabs (activeName, oldActiveName) {
+      if (oldActiveName === '0' && this.formAdd.goods_cat.length === 0) {
+        return false
+      }
+      console.log(activeName, oldActiveName)
     }
 
   }

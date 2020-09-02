@@ -42,7 +42,9 @@ import { Button,
   Cascader,
   Alert,
   Tabs,
-  TabPane
+  TabPane,
+  Steps,
+  Step
 } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
@@ -79,6 +81,8 @@ Vue.use(Input)
   .use(Alert)
   .use(Tabs)
   .use(TabPane)
+  .use(Steps)
+  .use(Step)
 
 Vue.prototype.$http = axios
 
