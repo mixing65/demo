@@ -23,7 +23,7 @@
         </el-steps>
         <!-- 侧边导航 -->
         <el-form ref="formAddRef" :model="formAdd" label-width="80px" :rules="formAddRules" label-position="top">
-            <el-tabs tab-position="left" v-model="active" :before-leave="checkTabs">
+            <el-tabs tab-position="left" v-model="active" :before-leave="checkTabs" @tab-click="tabChange">
               <el-tab-pane label="基本信息" name="0">
                 <el-form-item label="商品名称" prop="goods_name">
                   <el-input v-model="formAdd.goods_name"></el-input>
@@ -48,9 +48,32 @@
                     </el-cascader>
                 </el-form-item>
               </el-tab-pane>
-              <el-tab-pane label="商品参数" name="1">配置管理</el-tab-pane>
-              <el-tab-pane label="商品属性" name="2">角色管理</el-tab-pane>
-              <el-tab-pane label="商品图片" name="3">定时任务补偿</el-tab-pane>
+              <el-tab-pane label="商品参数" name="1">
+                <!-- 商品参数列表 -->
+                <el-form-item :label="item.attr_name" v-for="item in manyTabData" :key="item.attr_id">
+                  <el-checkbox-group v-model="item.attr_vals" >
+                    <el-checkbox :label="cb" v-for="(cb ,i) in item.attr_vals" :key="i"  border></el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-tab-pane>
+              <el-tab-pane label="商品属性" name="2">
+                <!-- 商品属性 -->
+                <el-form-item :label="item.attr_name" v-for="item in onlyTabData" :key="item.attr_id">
+                  <el-input v-model="item.attr_vals"></el-input>
+                </el-form-item>
+              </el-tab-pane>
+              <el-tab-pane label="商品图片" name="3">
+                <!-- 图片上传 -->
+                <el-upload
+                  class="upload-demo"
+                  :headers="headersObj"
+                  :action="uploadUrl"
+                  :on-preview="handlePreview"
+                  :on-remove="handleRemove"
+                  list-type="picture">
+                  <el-button size="small" type="primary">点击上传</el-button>
+                </el-upload>
+              </el-tab-pane>
               <el-tab-pane label="商品内容" name="4">定时任务补偿</el-tab-pane>
             </el-tabs>
         </el-form>
@@ -89,6 +112,14 @@ export default {
           { required: true, message: '请输入商品数量', trigger: 'blur' }
         ]
 
+      },
+      // 商品参数
+      manyTabData: [],
+      // 商品列表
+      onlyTabData: [],
+      uploadUrl: 'http://timemeetyou.com:8889/api/private/v1/upload',
+      headersObj: {
+        Authorization: window.sessionStorage.getItem('token')
       }
 
     }
@@ -113,9 +144,42 @@ export default {
     },
     checkTabs (activeName, oldActiveName) {
       if (oldActiveName === '0' && this.formAdd.goods_cat.length === 0) {
+        this.$message.error('请先选择商品分类')
         return false
       }
-      console.log(activeName, oldActiveName)
+    },
+    // 标签页切换
+    tabChange () {
+      switch (this.active) {
+        case '1':
+          this.$http.get(`/categories/${this.formAdd.goods_cat[this.formAdd.goods_cat.length - 1]}/attributes`, {params: {sel: 'many'}}).then(res => {
+            res.data.data.forEach(element => {
+              element.attr_vals = element.attr_vals.length === 0 ? [] : element.attr_vals.split(' ')
+            })
+            this.manyTabData = res.data.data
+          }).catch(err => {
+            this.$message.error(err)
+          })
+          break
+        case '2':
+          this.$http.get(`/categories/${this.formAdd.goods_cat[this.formAdd.goods_cat.length - 1]}/attributes`, {params: {sel: 'only'}}).then(res => {
+            console.log('11111', res.data.data)
+            this.onlyTabData = res.data.data
+          }).catch(err => {
+            this.$message.error(err)
+          })
+          break
+        default:
+          break
+      }
+    },
+    // 图片预览
+    handlePreview () {
+
+    },
+    // 移除图片
+    handleRemove () {
+
     }
 
   }

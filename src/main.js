@@ -44,7 +44,10 @@ import { Button,
   Tabs,
   TabPane,
   Steps,
-  Step
+  Step,
+  CheckboxGroup,
+  Checkbox,
+  Upload
 } from 'element-ui'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
@@ -83,6 +86,9 @@ Vue.use(Input)
   .use(TabPane)
   .use(Steps)
   .use(Step)
+  .use(CheckboxGroup)
+  .use(Checkbox)
+  .use(Upload)
 
 Vue.prototype.$http = axios
 
