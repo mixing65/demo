@@ -70,11 +70,18 @@
                   :action="uploadUrl"
                   :on-preview="handlePreview"
                   :on-remove="handleRemove"
+                  :on-success="handleSuccess"
                   list-type="picture">
                   <el-button size="small" type="primary">点击上传</el-button>
                 </el-upload>
               </el-tab-pane>
-              <el-tab-pane label="商品内容" name="4">定时任务补偿</el-tab-pane>
+               <el-dialog title="修改用户信息" :visible.sync="imgdialog" width="80%" >
+                  <img :src="imgUrl" alt="" class="imgClass">
+                </el-dialog>
+              <el-tab-pane label="商品内容" name="4">
+                <quill-editor v-model="formAdd.goods_introduce"></quill-editor>
+                <el-button type="primary" @click="addGoods" class="btn">添加商品</el-button>
+              </el-tab-pane>
             </el-tabs>
         </el-form>
     </div>
@@ -93,7 +100,10 @@ export default {
         goods_price: '',
         goods_weight: '',
         goods_number: '',
-        goods_cat: ''
+        goods_cat: '',
+        pics: [],
+        goods_introduce: '',
+        attrs: []
       },
       // 三级连选绑定值
       selectValue: [],
@@ -120,7 +130,10 @@ export default {
       uploadUrl: 'http://timemeetyou.com:8889/api/private/v1/upload',
       headersObj: {
         Authorization: window.sessionStorage.getItem('token')
-      }
+      },
+      // 图片预览地址
+      imgUrl: '',
+      imgdialog: false
 
     }
   },
@@ -139,7 +152,7 @@ export default {
       this.$http.get('/categories').then(res => {
         this.categoriesList = res.data.data
       }).catch(err => {
-
+        this.$message.error(err)
       })
     },
     checkTabs (activeName, oldActiveName) {
@@ -174,12 +187,39 @@ export default {
       }
     },
     // 图片预览
-    handlePreview () {
-
+    handlePreview (file) {
+      this.imgUrl = file.response.data.url
+      this.imgdialog = true
     },
     // 移除图片
-    handleRemove () {
-
+    handleRemove (file) {
+      const i = this.formAdd.pics.findIndex(item => {
+        // eslint-disable-next-line no-unused-expressions
+        item.pic === file.response.data.tmp_path
+      })
+      this.formAdd.pics.splice(i, 1)
+      console.log(this.formAdd)
+    },
+    // 图片上传成功
+    handleSuccess (response) {
+      // console.log(response)
+      const pic = {pic: response.data.tmp_path}
+      this.formAdd.pics.push(pic)
+      console.log(this.formAdd)
+    },
+    // 添加商品信息
+    addGoods () {
+      console.log(this.formAdd)
+      this.$refs.formAddRef.validate(valid => {
+        if (!valid) {
+          this.$message.error('请填写完整商品分类数据')
+        } else {
+          const newFormAdd = JSON.parse(JSON.stringify(this.formAdd))
+          newFormAdd.goods_cat = newFormAdd.goods_cat.join(',')
+          console.log(newFormAdd)
+          console.log(this.manyTabData)
+        }
+      })
     }
 
   }
@@ -188,6 +228,15 @@ export default {
 <style lang="less" scoped>
   /deep/ .el-alert--info.is-light {
     margin-top: 20px;
+  }
+  .imgClass {
+    width: 100%;
+  }
+  /deep/.ql-editor {
+    min-height: 300px;
+  }
+  .btn {
+    margin-top: 10px;
   }
 
 </style>

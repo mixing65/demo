@@ -49,6 +49,10 @@ import { Button,
   Checkbox,
   Upload
 } from 'element-ui'
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
@@ -89,6 +93,7 @@ Vue.use(Input)
   .use(CheckboxGroup)
   .use(Checkbox)
   .use(Upload)
+Vue.use(VueQuillEditor)
 
 Vue.prototype.$http = axios
 
