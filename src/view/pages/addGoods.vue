@@ -202,10 +202,8 @@ export default {
     },
     // 图片上传成功
     handleSuccess (response) {
-      // console.log(response)
       const pic = {pic: response.data.tmp_path}
       this.formAdd.pics.push(pic)
-      console.log(this.formAdd)
     },
     // 添加商品信息
     addGoods () {
@@ -217,7 +215,27 @@ export default {
           const newFormAdd = JSON.parse(JSON.stringify(this.formAdd))
           newFormAdd.goods_cat = newFormAdd.goods_cat.join(',')
           console.log(newFormAdd)
-          console.log(this.manyTabData)
+          this.manyTabData.forEach((item) => {
+            const many = {
+              attr_id: item.attr_id,
+              attr_value: item.attr_vals.join(',')
+            }
+            this.formAdd.attrs.push(many)
+          })
+          this.onlyTabData.forEach((item) => {
+            const only = {
+              attr_id: item.attr_id,
+              attr_value: item.attr_vals.join(',')
+            }
+            this.formAdd.attrs.push(only)
+          })
+          newFormAdd.attrs = this.formAdd.attrs
+          console.log(newFormAdd)
+          this.$http.post('goods', newFormAdd).then(res => {
+            this.$router.push('/home/goods')
+          }).catch(err => {
+            this.$message.error(err)
+          })
         }
       })
     }
