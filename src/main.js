@@ -47,7 +47,9 @@ import { Button,
   Step,
   CheckboxGroup,
   Checkbox,
-  Upload
+  Upload,
+  Timeline,
+  TimelineItem
 } from 'element-ui'
 import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
@@ -93,6 +95,8 @@ Vue.use(Input)
   .use(CheckboxGroup)
   .use(Checkbox)
   .use(Upload)
+  .use(Timeline)
+  .use(TimelineItem)
 Vue.use(VueQuillEditor)
 
 Vue.prototype.$http = axios
