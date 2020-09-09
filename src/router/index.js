@@ -10,6 +10,7 @@ import params from '../view/pages/params'
 import goods from '../view/pages/goods'
 import addGoods from '../view/pages/addGoods'
 import orders from '../view/pages/orders'
+import reports from '../view/pages/reports'
 // import index from '../view/index'
 // import test from '../view/test'
 // import arr from '../view/arr'
@@ -76,6 +77,11 @@ const router = new Router({
           path: 'orders',
           name: 'orders',
           component: orders
+        },
+        {
+          path: 'reports',
+          name: 'reports',
+          component: reports
         }
       ]
     }
