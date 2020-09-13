@@ -55,6 +55,8 @@ import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
@@ -102,9 +104,17 @@ Vue.use(VueQuillEditor)
 Vue.prototype.$http = axios
 
 axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
+// request 拦截器显示进度条
 axios.interceptors.request.use(config => {
   console.log(config)
+  NProgress.start()
   config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+})
+// response 拦截器隐藏进度条
+axios.interceptors.response.use(config => {
+  console.log(config)
+  NProgress.done()
   return config
 })
 // axios.defaults.baseURL = 'https://easy-mock.com/mock/5f16da6dee31c413514f6419/study'
