@@ -1,78 +1,115 @@
 <template>
-    <div>
-      <!-- 头部面包屑 -->
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/">商品管理</a></el-breadcrumb-item>
-        <el-breadcrumb-item>商品分类</el-breadcrumb-item>
-      </el-breadcrumb>
-      <el-button type="primary" @click="addSort">添加分类</el-button>
-      <!-- 表格区域 -->
-        <zk-table :data="categoriesList" :columns="columsList" :selection-type="false">
-          <!-- 是否有效 -->
-          <template slot="isOk" slot-scope="scope">
-            <i class="el-icon-success" v-if="scope.row.cat_deleted === false" style="color:green"></i>
-            <i class="el-icon-error" v-else style="color:red"></i>
-          </template>
-          <!-- 排序 -->
-          <template slot="order" slot-scope="scope">
-            <el-tag type="success" size="mini" v-if="scope.row.cat_level === 0">一级</el-tag>
-            <el-tag type="success" size="mini" v-else-if="scope.row.cat_level === 1">二级</el-tag>
-            <el-tag type="warning" size="mini" v-else>三级</el-tag>
-          </template>
-          <!-- 操作 -->
-          <template slot="opt" slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="editSort(scope.row.cat_id)">编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteSort(scope.row.cat_id)">搜索</el-button>
-          </template>
-        </zk-table>
-       <!-- 分页 -->
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="queryInfo.pagenum"
-          :page-sizes="[10, 20, 30, 40]"
-          :page-size="queryInfo.pagesize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
-        </el-pagination>
-        <!-- 添加分类对话框 -->
-        <el-dialog title="添加分类" :visible.sync="dialogVisible" width="80%" @close="closeDialog">
-          <el-form ref="formAddRef" :model="formAdd" label-width="80px" :rules="formAddRules">
-            <el-form-item label="分类名称" prop="name">
-              <el-input v-model="formAdd.cat_name"></el-input>
-            </el-form-item>
-            <el-form-item label="父级分类">
-              <!-- 连级选择 -->
-                <el-cascader
-                style="width:100%"
-                  v-model="selectValue"
-                  :options="parentList"
-                  :props="{ expandTrigger: 'hover',checkStrictly: true,value: 'cat_id',label: 'cat_name',children: 'children' }"
-                  @change="handleChange"
-                  :clearable="true"
-                 >
-                </el-cascader>
-            </el-form-item>
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="cancle">取 消</el-button>
-            <el-button type="primary" @click="define">确 定</el-button>
-          </span>
-        </el-dialog>
-         <!-- 修改分类对话框 -->
-        <el-dialog title="修改分类" :visible.sync="editDialogVisible" width="80%" @close="closeDialog">
-          <el-form ref="formAddRef" :model="formUpdate" label-width="80px">
-            <el-form-item label="分类名称" prop="name">
-              <el-input v-model="formUpdate.cat_name"></el-input>
-            </el-form-item>
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="cancle">取 消</el-button>
-            <el-button type="primary" @click="define2">确 定</el-button>
-          </span>
-        </el-dialog>
-    </div>
+  <div>
+    <!-- 头部面包屑 -->
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item><a href="/">商品管理</a></el-breadcrumb-item>
+      <el-breadcrumb-item>商品分类</el-breadcrumb-item>
+    </el-breadcrumb>
+    <el-button type="primary"
+               @click="addSort"
+               class="addBtn">添加分类</el-button>
+    <!-- 表格区域 -->
+    <zk-table :data="categoriesList"
+              :columns="columsList"
+              :selection-type="false">
+      <!-- 是否有效 -->
+      <template slot="isOk"
+                slot-scope="scope">
+        <i class="el-icon-success"
+           v-if="scope.row.cat_deleted === false"
+           style="color:green"></i>
+        <i class="el-icon-error"
+           v-else
+           style="color:red"></i>
+      </template>
+      <!-- 排序 -->
+      <template slot="order"
+                slot-scope="scope">
+        <el-tag type="success"
+                size="mini"
+                v-if="scope.row.cat_level === 0">一级</el-tag>
+        <el-tag type="success"
+                size="mini"
+                v-else-if="scope.row.cat_level === 1">二级</el-tag>
+        <el-tag type="warning"
+                size="mini"
+                v-else>三级</el-tag>
+      </template>
+      <!-- 操作 -->
+      <template slot="opt"
+                slot-scope="scope">
+        <el-button type="primary"
+                   icon="el-icon-edit"
+                   size="mini"
+                   @click="editSort(scope.row.cat_id)">编辑</el-button>
+        <el-button type="danger"
+                   icon="el-icon-delete"
+                   size="mini"
+                   @click="deleteSort(scope.row.cat_id)">搜索</el-button>
+      </template>
+    </zk-table>
+    <!-- 分页 -->
+    <el-pagination @size-change="handleSizeChange"
+                   @current-change="handleCurrentChange"
+                   :current-page="queryInfo.pagenum"
+                   :page-sizes="[10, 20, 30, 40]"
+                   :page-size="queryInfo.pagesize"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   :total="total">
+    </el-pagination>
+    <!-- 添加分类对话框 -->
+    <el-dialog title="添加分类"
+               :visible.sync="dialogVisible"
+               width="80%"
+               @close="closeDialog">
+      <el-form ref="formAddRef"
+               :model="formAdd"
+               label-width="80px"
+               :rules="formAddRules">
+        <el-form-item label="分类名称"
+                      prop="name">
+          <el-input v-model="formAdd.cat_name"></el-input>
+        </el-form-item>
+        <el-form-item label="父级分类">
+          <!-- 连级选择 -->
+          <el-cascader style="width:100%"
+                       v-model="selectValue"
+                       :options="parentList"
+                       :props="{ expandTrigger: 'hover',checkStrictly: true,value: 'cat_id',label: 'cat_name',children: 'children' }"
+                       @change="handleChange"
+                       :clearable="true">
+          </el-cascader>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="cancle">取 消</el-button>
+        <el-button type="primary"
+                   @click="define">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 修改分类对话框 -->
+    <el-dialog title="修改分类"
+               :visible.sync="editDialogVisible"
+               width="80%"
+               @close="closeDialog">
+      <el-form ref="formAddRef"
+               :model="formUpdate"
+               label-width="80px">
+        <el-form-item label="分类名称"
+                      prop="name">
+          <el-input v-model="formUpdate.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="cancle">取 消</el-button>
+        <el-button type="primary"
+                   @click="define2">确 定</el-button>
+      </span>
+    </el-dialog>
+  </div>
 </template>
 <script>
 export default {
@@ -128,7 +165,7 @@ export default {
       },
       parentList: [],
       selectValue: [],
-      formUpdate: {cat_name: ''},
+      formUpdate: { cat_name: '' },
       editDialogVisible: false,
       saveId: ''
     }
@@ -141,7 +178,7 @@ export default {
   },
   methods: {
     getcategoriesList () {
-      this.$http.get('categories', {params: this.queryInfo}).then(res => {
+      this.$http.get('categories', { params: this.queryInfo }).then(res => {
         this.categoriesList = res.data.data.result
         this.total = res.data.data.total
         console.log(res.data)
@@ -179,7 +216,7 @@ export default {
     },
     // 获取父级分类数据列表
     getParent () {
-      this.$http.get('categories', {params: {type: 2}}).then(res => {
+      this.$http.get('categories', { params: { type: 2 } }).then(res => {
         // console.log(res.data.data)
         this.parentList = res.data.data
       }).catch(err => {
@@ -255,8 +292,8 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-// .el-button {
-//   margin-top: 10px;
-// }
-
+.addBtn {
+  margin-top: 25px;
+  margin-bottom: 20px;
+}
 </style>
