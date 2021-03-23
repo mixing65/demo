@@ -8,88 +8,145 @@
     </el-breadcrumb>
     <!-- 内容区 -->
     <div class="contentBox">
-      <el-button slot="append" @click="addRoles" >添加角色</el-button>
+      <el-button slot="append"
+                 @click="addRoles">添加角色</el-button>
       <!-- 表格 -->
-      <el-table :data="tableData" style="width: 100%">
+      <el-table :data="tableData"
+                style="width: 100%">
 
         <el-table-column type="expand">
-          <template  v-slot:default="scope">
-          <el-row v-for="list1 in scope.row.children" :key="list1.id">
-            <!-- 一级 -->
-            <el-col :span="6">
-              <el-tag closable @close="remove(scope.row,list1.id)">{{list1.authName}}</el-tag><i class="el-icon-caret-right"></i>
-            </el-col>
+          <template v-slot:default="scope">
+            <el-row v-for="list1 in scope.row.children"
+                    :key="list1.id">
+              <!-- 一级 -->
+              <el-col :span="6">
+                <el-tag closable
+                        @close="remove(scope.row,list1.id)">{{list1.authName}}</el-tag><i class="el-icon-caret-right"></i>
+              </el-col>
 
-            <el-col :span="18">
-              <el-row  v-for="list2 in list1.children" :key="list2.id">
-                <!-- 二级 -->
-                <el-col :span="6">
-                  <el-tag type="success" closable @close="remove(scope.row,list2.id)">{{list2.authName}}</el-tag><i class="el-icon-caret-right"></i>
-                </el-col>
-                <el-col :span="12" >
-                  <!-- 三级 -->
-                    <el-tag type="warning" v-for="list3 in list2.children" :key="list3.id" closable @close="remove(scope.row,list3.id)">{{list3.authName}}</el-tag>
-                </el-col>
-              </el-row>
-            </el-col>
-          </el-row>
+              <el-col :span="18">
+                <el-row v-for="list2 in list1.children"
+                        :key="list2.id">
+                  <!-- 二级 -->
+                  <el-col :span="6">
+                    <el-tag type="success"
+                            closable
+                            @close="remove(scope.row,list2.id)">{{list2.authName}}</el-tag><i class="el-icon-caret-right"></i>
+                  </el-col>
+                  <el-col :span="12">
+                    <!-- 三级 -->
+                    <el-tag type="warning"
+                            v-for="list3 in list2.children"
+                            :key="list3.id"
+                            closable
+                            @close="remove(scope.row,list3.id)">{{list3.authName}}</el-tag>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
           </template>
         </el-table-column>
-        <el-table-column type="index" label="#">
+        <el-table-column type="index"
+                         label="#"
+                         align="center">
         </el-table-column>
-        <el-table-column label="角色名称" prop="roleName">
+        <el-table-column label="角色名称"
+                         prop="roleName"
+                         align="center">
         </el-table-column>
-        <el-table-column label="角色描述" prop="roleDesc">
+        <el-table-column label="角色描述"
+                         prop="roleDesc"
+                         align="center">
         </el-table-column>
-        <el-table-column label="操作" prop="desc">
+        <el-table-column label="操作"
+                         prop="desc"
+                         align="center"
+                         min-width="200">
           <template v-slot:default="scope">
-              <el-button type="primary" icon="el-icon-edit" size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteInfo(scope.row.id)">删除</el-button>
-              <el-button type="warning" icon="el-icon-setting" size="mini" @click="playRoles(scope.row)">分配权限</el-button>
-            </template>
+            <el-button type="primary"
+                       icon="el-icon-edit"
+                       size="mini"
+                       @click="editInfo(scope.row.id)">编辑</el-button>
+            <el-button type="danger"
+                       icon="el-icon-delete"
+                       size="mini"
+                       @click="deleteInfo(scope.row.id)">删除</el-button>
+            <el-button type="warning"
+                       icon="el-icon-setting"
+                       size="mini"
+                       @click="playRoles(scope.row)">分配权限</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </div>
-     <!-- 添加角色表单 -->
-      <el-dialog title="添加用户" :visible.sync="dialogVisible" width="80%" >
-        <el-form ref="formAddRef" :model="formAdd" label-width="80px" :rules="formAddRules">
-          <el-form-item label="角色名称" prop="username">
-            <el-input v-model="formAdd.roleName"></el-input>
-          </el-form-item>
-          <el-form-item label="角色描述" prop="password">
-            <el-input v-model="formAdd.roleDesc"></el-input>
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="cancle">取 消</el-button>
-          <el-button type="primary" @click="define">确 定</el-button>
-        </span>
-      </el-dialog>
-      <!-- 编辑角色表单 -->
-      <el-dialog title="编辑用户" :visible.sync="updatedialogVisible" width="80%" >
-        <el-form ref="formAddRef" :model="formUpdate" label-width="80px" :rules="formAddRules">
-          <el-form-item label="角色名称" prop="username">
-            <el-input v-model="formUpdate.roleName"></el-input>
-          </el-form-item>
-          <el-form-item label="角色描述" prop="password">
-            <el-input v-model="formUpdate.roleDesc"></el-input>
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="cancle">取 消</el-button>
-          <el-button type="primary" @click="updateDefine">确 定</el-button>
-        </span>
-      </el-dialog>
-      <!-- 分配权限 -->
-      <el-dialog title="分配权限" :visible.sync="playdialogVisible" width="80%" @close="closeDialog">
-        <el-tree :data="rightsList" show-checkbox node-key="id" default-expand-all :default-checked-keys="checkArray"
-          :props="defaultProps" ref="treeRef">
-        </el-tree>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="cancle2">取 消</el-button>
-          <el-button type="primary" @click="updateRoles">确 定</el-button>
-        </span>
-      </el-dialog>
+    <!-- 添加角色表单 -->
+    <el-dialog title="添加用户"
+               :visible.sync="dialogVisible"
+               width="80%">
+      <el-form ref="formAddRef"
+               :model="formAdd"
+               label-width="80px"
+               :rules="formAddRules">
+        <el-form-item label="角色名称"
+                      prop="username">
+          <el-input v-model="formAdd.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述"
+                      prop="password">
+          <el-input v-model="formAdd.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="cancle">取 消</el-button>
+        <el-button type="primary"
+                   @click="define">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 编辑角色表单 -->
+    <el-dialog title="编辑用户"
+               :visible.sync="updatedialogVisible"
+               width="80%">
+      <el-form ref="formAddRef"
+               :model="formUpdate"
+               label-width="80px"
+               :rules="formAddRules">
+        <el-form-item label="角色名称"
+                      prop="username">
+          <el-input v-model="formUpdate.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述"
+                      prop="password">
+          <el-input v-model="formUpdate.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="cancle">取 消</el-button>
+        <el-button type="primary"
+                   @click="updateDefine">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 分配权限 -->
+    <el-dialog title="分配权限"
+               :visible.sync="playdialogVisible"
+               width="80%"
+               @close="closeDialog">
+      <el-tree :data="rightsList"
+               show-checkbox
+               node-key="id"
+               default-expand-all
+               :default-checked-keys="checkArray"
+               :props="defaultProps"
+               ref="treeRef">
+      </el-tree>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="cancle2">取 消</el-button>
+        <el-button type="primary"
+                   @click="updateRoles">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -173,7 +230,7 @@ export default {
         this.getRolesList()
         this.dialogVisible = false
         this.updatedialogVisible = false
-      // eslint-disable-next-line handle-callback-err
+        // eslint-disable-next-line handle-callback-err
       }).catch(err => {
         this.$message.error('添加用户失败')
       })
@@ -184,7 +241,7 @@ export default {
       this.$http.get('roles/' + id).then(res => {
         this.$message.success('查询用户成功')
         this.formUpdate = res.data.data
-      // eslint-disable-next-line handle-callback-err
+        // eslint-disable-next-line handle-callback-err
       }).catch(err => {
         this.$message.error('查询用户失败')
       })
@@ -196,7 +253,7 @@ export default {
         this.getRolesList()
         this.dialogVisible = false
         this.updatedialogVisible = false
-      // eslint-disable-next-line handle-callback-err
+        // eslint-disable-next-line handle-callback-err
       }).catch(err => {
         this.$message.error('添加用户失败')
       })
@@ -287,11 +344,11 @@ export default {
       console.log(' this.saveId', this.saveId)
       let keys = [...this.$refs.treeRef.getCheckedKeys(), ...this.$refs.treeRef.getHalfCheckedNodes()]
       let idStr = keys.join(',')
-      this.$http.post(`roles/${this.saveId}/rights`, {rids: idStr}).then(res => {
+      this.$http.post(`roles/${this.saveId}/rights`, { rids: idStr }).then(res => {
         this.$message.success('分配角色成功')
         this.getRolesList()
         this.playdialogVisible = false
-      // eslint-disable-next-line handle-callback-err
+        // eslint-disable-next-line handle-callback-err
       }).catch(err => {
         this.$message.error('分配角色失败')
       })
@@ -301,7 +358,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .contentBox {
-  border: 1px solid black;
   margin-top: 20px;
   .el-input {
     width: 50%;
