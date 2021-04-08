@@ -9,8 +9,10 @@ import echarts from 'echarts'
 import '../src/assets/css/global.css'
 import ZkTable from 'vue-table-with-tree-grid'
 import axios from 'axios'
+import VCharts from 'v-charts'
 
-import { Button,
+import {
+  Button,
   Select,
   Carousel,
   CarouselItem,
@@ -60,6 +62,7 @@ import 'nprogress/nprogress.css'
 Vue.prototype.echarts = echarts
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
+Vue.use(VCharts)
 Vue.use(Button)
 Vue.use(Select)
 Vue.use(Carousel)
