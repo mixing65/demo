@@ -3,12 +3,20 @@
     <div class="chartsTitle">
       <i></i>
       <span>用电量</span>
+      <slot name="name"></slot>
+      <div v-for="(item,i) in testList"
+           :key="i">
+        <slot name="test"
+              up="上"
+              v-bind:todo="item.name"></slot>
+      </div>
     </div>
     <ve-line :data="chartData"
              :settings="chartSettings"
              width="100%"
              height="100%"
              :extend="chartExtend"></ve-line>
+    <!-- <slot></slot> -->
   </div>
 </template>
  
@@ -91,7 +99,12 @@ export default {
             show: false,
           }
         }
-      }
+      },
+      testList: [
+        { id: 1, name: '123' },
+        { id: 2, name: '223' },
+        { id: 3, name: '323' }
+      ]
     }
   },
   props: {

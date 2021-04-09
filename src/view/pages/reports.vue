@@ -7,7 +7,12 @@
       <el-breadcrumb-item>数据报表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="chartBox">
-      <!-- <powerLine :chartData="chartsData"></powerLine> -->
+      <powerLine :chartData="chartsData">
+        <!-- <div>solt插槽传值</div> -->
+        <div slot="name">具名插槽</div>
+        <div slot="test"
+             slot-scope="st">ces{{st}}</div>
+      </powerLine>
       <!-- <eventStatisticsChart :chartData="chartsData"></eventStatisticsChart> -->
       <!-- <leakageProtectionChart :chartData="chartsData"></leakageProtectionChart> -->
       <!-- <temperatureHumidityChart></temperatureHumidityChart> -->
@@ -221,6 +226,9 @@ export default {
   },
   created () {
     // this.getEchartData()
+  },
+  computed () {
+
   },
   methods: {
     // echart图表
